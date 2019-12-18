@@ -1,0 +1,14 @@
+Design a class Quick Sort an arry using Quick Sort Technique
+
+Member Data:
+
+int s:To store size of array
+inr a[]:An integer array to  store number 
+
+Member Function 
+
+void entry(int)-To enter the array elements from the user
+int partition(int,int)-To perform quick sort operation in a specified partition
+void qsort(int,int)-Method calling int partition(int,int)function and regulation the process of quicksort
+void display()-To display the array
+

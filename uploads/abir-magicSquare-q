@@ -1,0 +1,14 @@
+Write a program to create a magic square of size n, where n should be of odd dimension using class object
+
+Member Data:
+int n : To store the array size.
+int a[][] : A double dimensional array to store the magic square.
+
+Member functions:
+magic_square() : A default constructor to initialize n to 0.
+void magic() : To construct the magic square.
+void display() : To display the magic square.
+
+
+
+

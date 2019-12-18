@@ -1,99 +1,97 @@
 <!DOCTYPE html>
-<!-- Coded by G0b0RPorA(Abir Ganguly) -->
-<html>
-<head>
-<title>View programs</title>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=Edge">
-<meta name="viewport" content="width = device-width, initial-scale = 1">
-<!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script-->
-<link rel="stylesheet" href="externalFrameworks/maxcdn-bootstrap-3.4.0.min.css">
-<script src="externalFrameworks/googleapis-ajax-3.4.1-jquery.min.js"></script>
-<script src="externalFrameworks/maxcdn-bootstrap-3.4.0.min.js"></script>
-<link rel="stylesheet" href="style-uploadPHP.css">
-</head>
-<body>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>D.TECH</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="ui.css">
+    </head>
+    <body>
+        
+    <header>COMPUTER ASSIGNMENT</header>
 
+    <a id="upload" href="upload.php">UPLOAD NEW PROGRAM</a>
+    <?php
+$dir = "./uploads/";
 
-	<div class="container">
-		<div class="page-header">
-			<h1>Programs list:</h1>
-		</div>
-	<table class="table table-condensed">
-		<thead>
-			<tr>
-				<th>Program</th>
-				<th>Creator</th>
-				<th>Status</th>
-			</tr>
-		</thead>
-		<tbody>
+$onlyStatFiles = array();
 
-<?php
-/**
- * 
- * 
- * TODO : Create a sort button(on clicking sort button beside Program column heading, the program names will be sorted. on clicking sort button beside Creator column heading, the creator names will be sorted. Also create sort button beside status.)
- * 
- */
-
-
-$STAT_FILE_TRUE = '3';
-$STAT_FILE_FALSE = '9';
-
-$targetDir = './uploads/';
-
-$files = array_diff ( scandir ( $targetDir ), array (
-		'.',
-		'..'
-) );
-if (count ( scandir ( $targetDir ) ) == 2) { // if TARGET_DIR is empty
-	echo '<i>Directory is empty!</i><br>';
-} else {
-	foreach ( $files as $eachFile ) {
-		$ok = false;
-		if(substr($eachFile, -5) === '-stat') {
-			if($file = fopen($targetDir . $eachFile, 'r')) {
-				$fileName = str_replace('-stat', '', $eachFile);
-				echo '<tr>';
-				echo '<td>' . substr ( $fileName, (strpos ( $fileName, '-' ) + 1) ) . '</td>';
-				echo '<td>' . substr ( $fileName, 0, strpos ( $fileName, '-' ) ) . '</td>';
-				$statFileContents = str_split ( fgets ( $file ) ); // I believe no one will do nasty things with our stat files.
-				if(($statFileContents[0] === $STAT_FILE_TRUE) && ($statFileContents[1] === $STAT_FILE_TRUE) && ($statFileContents[2] === $STAT_FILE_TRUE)) {
-					echo '<td class="text-success">Done!</td>';
-				}
-				else if(($statFileContents[0] === $STAT_FILE_TRUE) && ($statFileContents[1] === $STAT_FILE_TRUE)) {
-					echo '<td class="text-warning">Almost done!</td>';
-				}
-				else {
-					echo '<td class="text-danger">Incomplete!</td>';
-				}
-				fclose($file);
-				echo '</tr>';
-				$ok = true;
-			}
-			if(!$ok) {
-				echo '<script>alert("Error in server!");</script>';
-				die ( 'Error in server!' );
+// Open a directory, and read its contents
+if (is_dir($dir)) {
+	if ($dh = opendir($dir)) {
+    	while (($file = readdir($dh)) !== false) {
+      		if($file[0]!=='.') {
+      			if(explode("-",$file)[2]==='stat') {
+        			array_push($onlyStatFiles, $file);
+    			}
 			}
 		}
+	closedir($dh);
 	}
 }
+
+/*Sorting according to program's name*/
+uasort($onlyStatFiles, function ($a, $b) {
+	$prog0 = explode("-",$a)[1];
+	$prog1 = explode("-",$b)[1];
+
+	return strcasecmp($prog0, $prog1);
+});
+
+        foreach ($onlyStatFiles as $file) {
+        	$uploader=explode("-",$file)[0];
+        $prog=explode("-",$file)[1];
+       	$myfile = fopen($dir.$file, "r") or die("Unable to open file!");
+        $stat =fread($myfile,filesize($dir.$file));
+        fclose($myfile);
+        //$stat=readfile($dir.$file); 
+        
+        echo '<form action="upload.php" method="post">';
+        echo '<div>';
+
+        if($stat[0]=="9")
+        echo '<span>Q</span>';
+        else
+        echo '<span style="background-color:greenyellow;color:red;">Q</span>';
+        if($stat[1]=="9")
+        echo '<span>A</span>';
+        else
+        echo '<span style="background-color:greenyellow;color:red;">A</span>';
+        if($stat[2]=="9")
+        echo '<span>O</span>';
+        else
+        echo '<span style="background-color:greenyellow;color:red;">O</span>';
+
+        echo '</div>';
+
+        echo '<input style="display:none" name="file" type="text" value="'.$uploader.'-'.$prog.'">';
+        echo '<input type="submit" value="'.$prog.'">';
+        echo '<label for="">'.$uploader.'</label>';
+        echo '</form>';
+      // 
+      // //echo "filename:" . $file . "<br>";
+      
+      //   echo '<form action="lastupload.php"method="post">';
+      //   echo '<label>'.$name.'</label>';
+      // if(file_exists($dir.'Q-'.$file))
+      // echo '<a href="'.$dir.'Q-'.$file.'">Q</a>';
+      // else
+      // {
+      //   echo '
+      //   <input style="display:none" name="name" type="text" value="Q-'.$name.'">
+      //   <input type="submit" value="Q" style="background-color:greenyellow;color:red;">';
+      // }
+      // if(file_exists($dir.'A-'.$file))
+      // echo '<a href="'.$dir.'A-'.$file.'">A</a>';
+      // else
+      // {
+      //   echo '
+      //   <input style="display:none" name="name" type="text" value="A-'.$name.'">
+      //   <input type="submit" value="A" style="background-color:greenyellow;color:red;">';
+      // }
+      // echo '</form>'
+}
 ?>
-
-		</tbody>
-	</table>
-	</div>
-	<footer>
-		(This system is not XSS-proof)<br> Coded by : G0b0RpoRA(Abir Ganguly)
-	</footer>
-
-</body>
+    </body>
 </html>
-
-
-
-
-
